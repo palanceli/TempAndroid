@@ -12,6 +12,7 @@ import org.w3c.dom.Text;
 
 public class CheatActivity extends AppCompatActivity {
     private static final String EXTRA_ANSWER_IS_TURE = "com.palanceli.ime.bnrg01.answer_is_true";
+    private static final String EXTRA_ANSWER_SHOW = "com.palanceli.ime.bnrg01.answer_show";
     private boolean mAnswerIsTrue;
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
@@ -32,13 +33,24 @@ public class CheatActivity extends AppCompatActivity {
                     mAnswerTextView.setText(R.string.true_button);
                 else
                     mAnswerTextView.setText(R.string.false_button);
+                setAnswerShowResult(true);  //
             }
         });
+    }
+
+    private void setAnswerShowResult(boolean isAnswerShown){
+        Intent data = new Inent();
+        data.putExtra(EXTRA_ANSWER_SHOW, isAnswerShown);
+        setResult(RESULT_OK, data);
     }
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue){
         Intent intent = new Intent(packageContext, CheatActivity.class);
         intent.putExtra(EXTRA_ANSWER_IS_TURE, answerIsTrue);
         return intent;
+    }
+
+    public static boolean wasAnswerShown(Intent result){
+        return result.getBooleanExtra(EXTRA_ANSWER_SHOW, false);
     }
 }

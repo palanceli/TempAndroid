@@ -32,6 +32,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
+    private boolean mIsCheater;
 
 
     @Override
@@ -70,6 +72,7 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -78,10 +81,9 @@ public class QuizActivity extends AppCompatActivity {
         mCheatButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-//                Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
         updateQuestion();
@@ -101,6 +103,17 @@ public class QuizActivity extends AppCompatActivity {
             messageResId = R.string.incorrect_toast;
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(resultCode != RESULT_OK)
+            return;
+        if(requestCode == REQUEST_CODE_CHEAT){
+            if(data == null)
+                return;
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 
     @Override
