@@ -113,6 +113,10 @@ public class QuizActivity extends AppCompatActivity {
             if(data == null)
                 return;
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            if(mIsCheater)
+                Log.d(TAG, "mIsCheater=1");
+            else
+                Log.d(TAG, "mIsCheater=0");
         }
     }
 
