@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.text.format.DateFormat;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 /**
@@ -38,6 +43,9 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private Button mReportButton;
     private Button mSuspectButton;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
+    private File mPhotoFile;
 
     //
     @Override
@@ -45,6 +53,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstance);
         UUID crimeId = (UUID)getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
     }
 
     //
@@ -102,10 +111,10 @@ public class CrimeFragment extends Fragment {
         });
 
         mSuspectButton = (Button)v.findViewById(R.id.crime_suspect);
-        Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         mSuspectButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                startActivityForResult(i, REQUEST_CONTACT);
+                startActivityForResult(pickContact, REQUEST_CONTACT);
             }
         });
         PackageManager packageManager = getActivity().getPackageManager();
@@ -116,6 +125,9 @@ public class CrimeFragment extends Fragment {
         if(mCrime.getSuspect() != null){
             mSuspectButton.setText(mCrime.getSuspect());
         }
+
+        mPhotoButton = (ImageButton)v.findViewById(R.id.crime_photo);
+        mPhotoView = (ImageView)v.findViewById(R.id.crime_camera);
 
         return v;
     }
