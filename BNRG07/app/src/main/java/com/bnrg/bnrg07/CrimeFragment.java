@@ -3,12 +3,15 @@ package com.bnrg.bnrg07;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +29,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 /**
  * Created by palance on 2017/9/14.
@@ -36,6 +40,7 @@ public class CrimeFragment extends Fragment {
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_PHOTO = 2;
 
     private Crime mCrime;
     private EditText mTitleField;
@@ -126,8 +131,30 @@ public class CrimeFragment extends Fragment {
             mSuspectButton.setText(mCrime.getSuspect());
         }
 
-        mPhotoButton = (ImageButton)v.findViewById(R.id.crime_photo);
-        mPhotoView = (ImageView)v.findViewById(R.id.crime_camera);
+        mPhotoButton = (ImageButton)v.findViewById(R.id.crime_camera);
+        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        boolean canTakePhoto = mPhotoFile != null && captureImage.resolveActivity(packageManager) != null;
+        mPhotoButton.setEnabled(canTakePhoto);
+        mPhotoButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                // 将本地文件翻译成Uri
+                Uri uri = FileProvider.getUriForFile(getActivity(),
+                        "com.bnrg.bnrg07.criminalintent.fileprovider", mPhotoFile);
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                // 得到每一个可以拍照的Activity
+                List<ResolveInfo> cameraActivities = getActivity().getPackageManager().
+                        queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY);
+                // 为每一个Activity授权，可以写入Uri
+                for(ResolveInfo activity: cameraActivities){
+                    getActivity().grantUriPermission(activity.activityInfo.packageName,
+                            uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureImage, REQUEST_PHOTO);
+            }
+        });
+
+        mPhotoView = (ImageView)v.findViewById(R.id.crime_photo);
 
         return v;
     }
