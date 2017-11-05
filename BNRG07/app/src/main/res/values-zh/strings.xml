@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BNRG07(cn)</string>
+    <string name="crime_title_hint">Enter a title for the crime.(cn)</string>
+    <string name="crime_title_label">Title(cn)</string>
+    <string name="crime_details_label">Details(cn)</string>
+    <string name="crime_solved_label">Solved(cn)</string>
+    <string name="date_picker_title">Date of crime:(cn)</string>
+    <string name="new_crime">New Crime(cn)</string>
+    <string name="show_subtitle">Show Subtitle(cn)</string>
+    <string name="hide_subtitle">Hide Subtitle(cn)</string>
+    <string name="subtitle_format">%1$d crimes(cn)</string>
+    <string name="crime_suspect_text">Choose Suspect(cn)</string>
+    <string name="crime_report_text">Send Crime Report(cn)</string>
+    <string name="crime_report">%1$s!
+    The crime was discovered on %2$s. %3$s, and %4$s(cn)
+    </string>
+    <string name="crime_report_solved">The case is solved(cn)</string>
+    <string name="crime_report_unsolved">The case is not solved(cn)</string>
+    <string name="crime_report_no_suspect">there is no suspect.(cn)</string>
+    <string name="crime_report_suspect">the suspect is %s.(cn)</string>
+    <string name="crime_report_subject">CriminalIntent Crime Report(cn)</string>
+    <string name="send_report">Send crime report via(cn)</string>
+</resources>

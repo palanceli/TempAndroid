@@ -71,8 +71,6 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view){
-//            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-//            startActivity(intent);
             mCallbacks.onCrimeSelected(mCrime);
         }
 
@@ -176,8 +174,6 @@ public class CrimeListFragment extends Fragment {
                 CrimeLab.get(getActivity()).addCrime(crime);
                 updateUI();
                 mCallbacks.onCrimeSelected(crime);
-//                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-//                startActivity(intent);
                 return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
