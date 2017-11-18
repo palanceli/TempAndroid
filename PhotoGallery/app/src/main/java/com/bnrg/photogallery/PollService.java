@@ -56,6 +56,42 @@ public class PollService extends IntentService {
         super(TAG);
     }
 
+    private void doNotifiy(){
+        Resources resources = getResources();
+        Intent i = PhotoGalleryActivity.newIntent(this);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+
+        NotificationManager notificationManager =
+                (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        String notificationChannelId = getString(R.string.notify_channel_id);
+        CharSequence channelName = getString(R.string.notify_channel_name);
+        String channelDescription = getString(R.string.notify_channel_description);
+        int channelImportance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel notificationChannel = new NotificationChannel(
+                notificationChannelId, channelName, channelImportance);
+        notificationChannel.setDescription(channelDescription);
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.RED);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        Notification notification = new
+                Notification.Builder(this)
+                .setTicker(resources.getString(R.string.new_pictures_title))
+                .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                .setContentTitle(resources.getString(R.string.new_pictures_title))
+                .setContentText(resources.getString(R.string.new_pictures_text))
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setChannelId(notificationChannelId)
+                .build();
+//
+//            NotificationManagerCompat notificationManager =
+//                                    NotificationManagerCompat.from(this);
+        notificationManager.notify(0, notification);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent){
         String query = QueryPreferences.getStoredQuery(this);
@@ -72,41 +108,10 @@ public class PollService extends IntentService {
         String resultId = items.get(0).getId();
         if(resultId.equals(lastResultId)){
             Log.i(TAG, "Got an old result: " + resultId);
+            doNotifiy();
         }else{
             Log.i(TAG, "Got a new result: " + resultId);
-            Resources resources = getResources();
-            Intent i = PhotoGalleryActivity.newIntent(this);
-            PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
-
-            NotificationManager notificationManager =
-                    (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-            String notificationChannelId = "PhotoGalleryChannel";
-            CharSequence channelName = "PGChannelName";
-            String channelDescription = "PGChannelDescription";
-            int channelImportance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    notificationChannelId, channelName, channelImportance);
-            notificationChannel.setDescription(channelDescription);
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-            notificationManager.createNotificationChannel(notificationChannel);
-
-            Notification notification = new
-                    Notification.Builder(this)
-                    .setTicker(resources.getString(R.string.new_pictures_title))
-                    .setSmallIcon(android.R.drawable.ic_menu_report_image)
-                    .setContentTitle(resources.getString(R.string.new_pictures_title))
-                    .setContentText(resources.getString(R.string.new_pictures_text))
-                    .setContentIntent(pi)
-                    .setAutoCancel(true)
-                    .setChannelId(notificationChannelId)
-                    .build();
-//
-//            NotificationManagerCompat notificationManager =
-//                                    NotificationManagerCompat.from(this);
-            notificationManager.notify(0, notification);
+            doNotifiy();
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
