@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class PollService extends IntentService {
     private static final String TAG = "PollService";
     private static final long POLL_INTERVAL_MS = TimeUnit.SECONDS.toMillis(10);
+    public static final String ACTION_SHOW_NOTIFICATION = "com.bnrg.photogallery.SHOW_NOTIFICATION";
 
     public static Intent newIntent(Context context){
         return new Intent(context, PollService.class);
@@ -43,6 +44,7 @@ public class PollService extends IntentService {
             alarmManager.cancel(pi);
             pi.cancel();
         }
+        QueryPreferences.setAlarmOn(context, isOn);
     }
 
     public static boolean isServiceAlarmOn(Context context){
@@ -108,10 +110,10 @@ public class PollService extends IntentService {
         String resultId = items.get(0).getId();
         if(resultId.equals(lastResultId)){
             Log.i(TAG, "Got an old result: " + resultId);
-            doNotifiy();
         }else{
             Log.i(TAG, "Got a new result: " + resultId);
             doNotifiy();
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
