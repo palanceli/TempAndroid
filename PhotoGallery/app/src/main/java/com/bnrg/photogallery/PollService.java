@@ -1,5 +1,6 @@
 package com.bnrg.photogallery;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -8,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -27,6 +29,10 @@ public class PollService extends IntentService {
     private static final String TAG = "PollService";
     private static final long POLL_INTERVAL_MS = TimeUnit.SECONDS.toMillis(10);
     public static final String ACTION_SHOW_NOTIFICATION = "com.bnrg.photogallery.SHOW_NOTIFICATION";
+    public static final String PERM_PRIVATE = "com.bnrg.photogallery.PRIVATE";
+    public static final String REQUEST_CODE = "REQUEST_CODE";
+    public static final String NOTIFICATION_CHANNEL = "NOTIFICATION_CHANNEL";
+    public static final String NOTIFICATION = "NOTIFICATION";
 
     public static Intent newIntent(Context context){
         return new Intent(context, PollService.class);
@@ -88,10 +94,19 @@ public class PollService extends IntentService {
                 .setAutoCancel(true)
                 .setChannelId(notificationChannelId)
                 .build();
-//
-//            NotificationManagerCompat notificationManager =
-//                                    NotificationManagerCompat.from(this);
-        notificationManager.notify(0, notification);
+        showBackgroundNotification(0, notificationChannel, notification);
+//        notificationManager.notify(0, notification);
+    }
+
+    private void showBackgroundNotification(int requestCode,
+                                            NotificationChannel notificationChannel,
+                                            Notification notification){
+        Intent i = new Intent(ACTION_SHOW_NOTIFICATION);
+        i.putExtra(REQUEST_CODE, requestCode);
+        i.putExtra(NOTIFICATION_CHANNEL, notificationChannel);
+        i.putExtra(NOTIFICATION, notification);
+        sendOrderedBroadcast(i, PERM_PRIVATE, null, null,
+                Activity.RESULT_OK, null, null);
     }
 
     @Override
@@ -113,7 +128,7 @@ public class PollService extends IntentService {
         }else{
             Log.i(TAG, "Got a new result: " + resultId);
             doNotifiy();
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
+//            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
