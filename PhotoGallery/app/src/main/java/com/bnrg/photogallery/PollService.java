@@ -43,10 +43,12 @@ public class PollService extends IntentService {
         PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         if(isOn){
+            Log.i(TAG, "repeating alarm");
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(),
                     POLL_INTERVAL_MS, pi);
         }else{
+            Log.i(TAG, "Cancel alarm");
             alarmManager.cancel(pi);
             pi.cancel();
         }
@@ -125,10 +127,10 @@ public class PollService extends IntentService {
         String resultId = items.get(0).getId();
         if(resultId.equals(lastResultId)){
             Log.i(TAG, "Got an old result: " + resultId);
+            doNotifiy();
         }else{
             Log.i(TAG, "Got a new result: " + resultId);
             doNotifiy();
-//            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
